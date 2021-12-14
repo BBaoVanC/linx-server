@@ -22,7 +22,7 @@
                 <select id="expiry" name="expires">
                     <option disabled>Expires:</option>
                     {% for expiry in expirylist %}
-                    <option value="{{ expiry.Seconds }}" {% if forloop.Last %} selected{% endif %}>{{ expiry.Human }}
+                    <option value="{{ expiry.Seconds }}" {% if (expiry.Seconds == expirydefault) %} selected {% endif %}>{{ expiry.Human }}
                     </option>
                     {% endfor %}
                 </select>
