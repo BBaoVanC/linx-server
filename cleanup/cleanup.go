@@ -8,8 +8,8 @@ import (
 	"github.com/andreimarcu/linx-server/expiry"
 )
 
-func Cleanup(filesDir string, metaDir string, noLogs bool) {
-	fileBackend := localfs.NewLocalfsBackend(metaDir, filesDir)
+func Cleanup(filesDir string, metaDir string, locksDir string, noLogs bool) {
+	fileBackend := localfs.NewLocalfsBackend(metaDir, filesDir, locksDir)
 
 	files, err := fileBackend.List()
 	if err != nil {
@@ -33,10 +33,10 @@ func Cleanup(filesDir string, metaDir string, noLogs bool) {
 	}
 }
 
-func PeriodicCleanup(minutes time.Duration, filesDir string, metaDir string, noLogs bool) {
+func PeriodicCleanup(minutes time.Duration, filesDir string, metaDir string, locksDir string, noLogs bool) {
 	c := time.Tick(minutes)
 	for range c {
-		Cleanup(filesDir, metaDir, noLogs)
+		Cleanup(filesDir, metaDir, locksDir, noLogs)
 	}
 
 }

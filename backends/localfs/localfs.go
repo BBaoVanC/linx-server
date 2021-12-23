@@ -16,6 +16,7 @@ import (
 type LocalfsBackend struct {
 	metaPath  string
 	filesPath string
+	locksPath string
 }
 
 type MetadataJSON struct {
@@ -127,6 +128,29 @@ func (b LocalfsBackend) writeMetadata(key string, metadata backends.Metadata) er
 	return nil
 }
 
+func (b LocalfsBackend) Lock(filename string) (err error) {
+	lockPath := path.Join(b.locksPath, filename)
+
+	lock, err := os.Create(lockPath)
+	if err != nil {
+		return err
+	}
+
+	lock.Close()
+	return
+}
+
+func (b LocalfsBackend) Unlock(filename string) (err error) {
+	lockPath := path.Join(b.locksPath, filename)
+
+	err = os.Remove(lockPath)
+	if err != nil {
+		return err
+	}
+
+	return
+}
+
 func (b LocalfsBackend) Put(key string, r io.Reader, expiry time.Time, deleteKey, accessKey string, srcIp string) (m backends.Metadata, err error) {
 	filePath := path.Join(b.filesPath, key)
 
@@ -201,9 +225,10 @@ func (b LocalfsBackend) List() ([]string, error) {
 	return output, nil
 }
 
-func NewLocalfsBackend(metaPath string, filesPath string) LocalfsBackend {
+func NewLocalfsBackend(metaPath string, filesPath string, locksPath string) LocalfsBackend {
 	return LocalfsBackend{
 		metaPath:  metaPath,
 		filesPath: filesPath,
+		locksPath: locksPath,
 	}
 }
